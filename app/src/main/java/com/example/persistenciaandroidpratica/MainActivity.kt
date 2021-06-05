@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         finalList.addAll(internalFiles)
         finalList.addAll(externalFiles)
 
-        adapter = FilesRecyclerViewAdapter(finalList,this::removeFile)
+        adapter = FilesRecyclerViewAdapter(finalList,this::removeFile, this)
 
         setupUI()
     }
