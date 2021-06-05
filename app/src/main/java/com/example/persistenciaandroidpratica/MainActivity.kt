@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.persistenciaandroidpratica.databinding.ActivityMainBinding
 import java.io.File
+import java.text.FieldPosition
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -28,9 +29,16 @@ class MainActivity : AppCompatActivity() {
         finalList.addAll(internalFiles)
         finalList.addAll(externalFiles)
 
-        adapter = FilesRecyclerViewAdapter(finalList, {})
+        adapter = FilesRecyclerViewAdapter(finalList,this::removeFile)
 
         setupUI()
+    }
+
+    private fun removeFile (position: Int) {
+        val file = finalList[position]
+        file.delete()
+        finalList.removeAt(position)
+        adapter.notifyItemRemoved(position)
     }
 
     fun setupUI() {
@@ -52,6 +60,8 @@ class MainActivity : AppCompatActivity() {
                         "CRIADO COM SUCESSO",
                         Toast.LENGTH_LONG
                     ).show()
+                    finalList.add(file)
+                    adapter.notifyItemInserted(finalList.indexOf(file))
                 }
             } else if (storageType == "external") {
                 extFile = File(getExternalFilesDir(null), fileName)
@@ -65,6 +75,8 @@ class MainActivity : AppCompatActivity() {
                     "CRIADO COM SUCESSO",
                     Toast.LENGTH_LONG
                 ).show()
+                finalList.add(extFile)
+                adapter.notifyItemInserted(finalList.indexOf(extFile))
             } else {
                 Toast.makeText(
                     applicationContext,
