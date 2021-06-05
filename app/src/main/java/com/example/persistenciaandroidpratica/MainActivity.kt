@@ -1,48 +1,83 @@
 package com.example.persistenciaandroidpratica
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.persistenciaandroidpratica.databinding.ActivityMainBinding
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private var storageType = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val fileName = "nome_do_arq"
-        val fileContentInterno = "conteudo_do_arq"
-        val fileContentExterno = "conteudo_do_arq_externo"
+        setupUI()
 
-        //referencia do arquivo
+//        //ler arquivo
+//        file.inputStream().use {
+//            Toast.makeText(applicationContext, it.readBytes().decodeToString(), Toast.LENGTH_LONG)
+//                .show()
+//        }
+//
+//        extFile.inputStream().use {
+//            Toast.makeText(applicationContext, it.readBytes().decodeToString(), Toast.LENGTH_LONG)
+//                .show()
+//        }
 
-        //diretorio interno
-        val file = File(filesDir, fileName)
-        file.createNewFile()
+    }
 
-        //diretorio externo
-        val extFile = File(getExternalFilesDir(null), fileName)
-        //val extFile = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
-        extFile.createNewFile()
+    fun setupUI() {
+        binding.button.setOnClickListener {
+            val fileName = binding.etName.text.toString()
+            val fileContent = binding.etContent.text.toString()
 
-        //salvar no diretorio
-        file.outputStream().use {
-            it.write(fileContentInterno.toByteArray())
+            if (storageType == "internal") {
+                val file = File(filesDir, fileName)
+                file.createNewFile()
+
+                file.outputStream().use {
+                    it.write(fileContent.toByteArray())
+                    Toast.makeText(
+                        applicationContext,
+                        "CRIADO COM SUCESSO",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } else if (storageType == "external") {
+                val extFile = File(getExternalFilesDir(null), fileName)
+                extFile.createNewFile()
+
+                extFile.outputStream().use {
+                    it.write(fileContent.toByteArray())
+                }
+                Toast.makeText(
+                    applicationContext,
+                    "CRIADO COM SUCESSO",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    "SELECIONE UMA OPÇÃO INTERNA/EXTERNA",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
 
-        extFile.outputStream().use {
-            it.write(fileContentExterno.toByteArray())
-        }
+    }
 
-        //ler arquivo
-        file.inputStream().use {
-            Toast.makeText(applicationContext, it.readBytes().decodeToString(), Toast.LENGTH_LONG).show()
+    fun checkRadio(view: View) {
+        when (view.id) {
+            R.id.radio1 -> {
+                storageType = "internal"
+            }
+            R.id.radio2 -> {
+                storageType = "external"
+            }
         }
-
-        extFile.inputStream().use {
-            Toast.makeText(applicationContext, it.readBytes().decodeToString(), Toast.LENGTH_LONG).show()
-        }
-
     }
 }
