@@ -1,12 +1,16 @@
 package com.example.persistenciaandroidpratica
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.HandlerCompat.postDelayed
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.persistenciaandroidpratica.databinding.ActivityMainBinding
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 import java.text.FieldPosition
 
 class MainActivity : AppCompatActivity() {
@@ -22,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         internalFiles = File(filesDir.toURI()).listFiles().toMutableList()
         externalFiles = File(getExternalFilesDir(null)?.toURI()).listFiles().toMutableList()
@@ -83,6 +86,7 @@ class MainActivity : AppCompatActivity() {
                     "SELECIONE UMA OPÇÃO INTERNA/EXTERNA",
                     Toast.LENGTH_LONG
                 ).show()
+
             }
         }
 
