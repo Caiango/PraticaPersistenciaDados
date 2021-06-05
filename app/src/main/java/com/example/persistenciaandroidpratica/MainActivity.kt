@@ -4,39 +4,45 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.persistenciaandroidpratica.databinding.ActivityMainBinding
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    lateinit var file: File
+    lateinit var extFile: File
+    private lateinit var internalFiles: MutableList<File>
+    private lateinit var externalFiles: MutableList<File>
+    private var finalList: ArrayList<File> = ArrayList()
     private var storageType = ""
+    private lateinit var adapter: FilesRecyclerViewAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        internalFiles = File(filesDir.toURI()).listFiles().toMutableList()
+        externalFiles = File(getExternalFilesDir(null)?.toURI()).listFiles().toMutableList()
+        finalList.addAll(internalFiles)
+        finalList.addAll(externalFiles)
+
+        adapter = FilesRecyclerViewAdapter(finalList, {})
+
         setupUI()
-
-//        //ler arquivo
-//        file.inputStream().use {
-//            Toast.makeText(applicationContext, it.readBytes().decodeToString(), Toast.LENGTH_LONG)
-//                .show()
-//        }
-//
-//        extFile.inputStream().use {
-//            Toast.makeText(applicationContext, it.readBytes().decodeToString(), Toast.LENGTH_LONG)
-//                .show()
-//        }
-
     }
 
     fun setupUI() {
+        binding.rv.layoutManager = LinearLayoutManager(applicationContext)
+        binding.rv.setHasFixedSize(true)
+        binding.rv.adapter = adapter
         binding.button.setOnClickListener {
             val fileName = binding.etName.text.toString()
             val fileContent = binding.etContent.text.toString()
 
             if (storageType == "internal") {
-                val file = File(filesDir, fileName)
+                file = File(filesDir, fileName)
                 file.createNewFile()
 
                 file.outputStream().use {
@@ -48,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
             } else if (storageType == "external") {
-                val extFile = File(getExternalFilesDir(null), fileName)
+                extFile = File(getExternalFilesDir(null), fileName)
                 extFile.createNewFile()
 
                 extFile.outputStream().use {
