@@ -61,6 +61,13 @@
             android:layout_height="match_parent"
             android:onClick="checkRadio"
             android:text="Externo" />
+
+        <RadioButton
+            android:id="@+id/radio3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="checkRadio"
+            android:text="Criptografado"/>
     </RadioGroup>
 
     <androidx.recyclerview.widget.RecyclerView

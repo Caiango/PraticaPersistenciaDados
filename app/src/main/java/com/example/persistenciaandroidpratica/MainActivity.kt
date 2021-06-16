@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.HandlerCompat.postDelayed
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.security.crypto.EncryptedFile
 import com.example.persistenciaandroidpratica.databinding.ActivityMainBinding
 import java.io.File
 import java.util.*
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     lateinit var file: File
     lateinit var extFile: File
+    lateinit var encryptedFile: File
     private lateinit var internalFiles: MutableList<File>
     private lateinit var externalFiles: MutableList<File>
     private var finalList: ArrayList<File> = ArrayList()
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         binding.rv.setHasFixedSize(true)
         binding.rv.adapter = adapter
         binding.button.setOnClickListener {
-            val fileName = binding.etName.text.toString()
+            val fileName = binding.etName.text.toString() + ".txt"
             val fileContent = binding.etContent.text.toString()
 
             if (storageType == "internal") {
@@ -80,13 +82,29 @@ class MainActivity : AppCompatActivity() {
                 ).show()
                 finalList.add(extFile)
                 adapter.notifyItemInserted(finalList.indexOf(extFile))
+            } else if (storageType == "encrypted"){
+                file = File(filesDir, fileName)
+
+                var message = ""
+                if (Utils.writeAndEncrypt(applicationContext, file, fileContent)) {
+                    message = "CRIADO E CRIPTOGRAFADO COM SUCESSO"
+                    finalList.add(file)
+                    adapter.notifyItemInserted(finalList.indexOf(file))
+                } else {
+                    message = "ESTE ARQUIVO JÁ EXISTE. CONSIDERE ALTERAR O NOME"
+                }
+
+                Toast.makeText(
+                    applicationContext,
+                    message,
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
                 Toast.makeText(
                     applicationContext,
                     "SELECIONE UMA OPÇÃO INTERNA/EXTERNA",
                     Toast.LENGTH_LONG
                 ).show()
-
             }
         }
 
@@ -99,6 +117,9 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.radio2 -> {
                 storageType = "external"
+            }
+            R.id.radio3 -> {
+                storageType = "encrypted"
             }
         }
     }
