@@ -35,9 +35,10 @@ class FilesRecyclerViewAdapter(
 
         holder.itemView.setOnClickListener {
             //recuperando o conteudo salvo no File
-            val content = files[position].inputStream().use {
-                it.readBytes().decodeToString()
-            }
+//            val content = files[position].inputStream().use {
+//                it.readBytes().decodeToString()
+//            }
+            val content = Utils.decryptAndRead(context, files[position])
             Toast.makeText(context, content, Toast.LENGTH_LONG).show()
         }
 
